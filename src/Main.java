@@ -18,6 +18,7 @@ public class Main {
         Input inputData = objectMapper.readValue(new File(args[0]),
                 Input.class);
 
+        //initialize users
         Database.getDataBase().initializeUserHashMap(inputData);
         Database.getDataBase().initializeMovies(inputData);
 
