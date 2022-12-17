@@ -20,6 +20,7 @@ public class Main {
 
         //initialize users
         Database.getDataBase().initializeUserHashMap(inputData);
+        //initialize movies
         Database.getDataBase().initializeMovies(inputData);
 
         Monitor.getMonitor().startAplication();
