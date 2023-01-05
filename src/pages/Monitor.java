@@ -8,8 +8,9 @@ public class Monitor {
 
     }
     public static Monitor getMonitor() {
-        if(instance == null)
+        if (instance == null) {
             instance = new Monitor();
+        }
         return instance;
     }
 

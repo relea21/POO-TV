@@ -9,9 +9,7 @@ Starting audit...
 [ERROR] C:\Users\Relea\IdeaProjects\POO-TV\.\src\pages\Monitor.java:4:13: Using the '.*' form of import should be avoided - utils.*. [AvoidStarImport]
 [ERROR] C:\Users\Relea\IdeaProjects\POO-TV\.\src\pages\Monitor.java:5:1: Class Monitor should be declared as final. [FinalClass]
 [ERROR] C:\Users\Relea\IdeaProjects\POO-TV\.\src\pages\Monitor.java:10:5: Missing a Javadoc comment. [MissingJavadocMethod]
-[ERROR] C:\Users\Relea\IdeaProjects\POO-TV\.\src\pages\Monitor.java:11:9: 'if' construct must use '{}'s. [NeedBraces]
-[ERROR] C:\Users\Relea\IdeaProjects\POO-TV\.\src\pages\Monitor.java:11:9: 'if' is not followed by whitespace. [WhitespaceAround]
-[ERROR] C:\Users\Relea\IdeaProjects\POO-TV\.\src\pages\Monitor.java:24:5: Missing a Javadoc comment. [MissingJavadocMethod]
+[ERROR] C:\Users\Relea\IdeaProjects\POO-TV\.\src\pages\Monitor.java:25:5: Missing a Javadoc comment. [MissingJavadocMethod]
 [ERROR] C:\Users\Relea\IdeaProjects\POO-TV\.\src\pages\Movies.java:7:13: Using the '.*' form of import should be avoided - utils.*. [AvoidStarImport]
 [ERROR] C:\Users\Relea\IdeaProjects\POO-TV\.\src\pages\Page.java:4:17: '(' is preceded with whitespace. [MethodParamPad]
 [ERROR] C:\Users\Relea\IdeaProjects\POO-TV\.\src\pages\Page.java:7:5: Missing a Javadoc comment. [MissingJavadocMethod]
@@ -22,6 +20,9 @@ Starting audit...
 [ERROR] C:\Users\Relea\IdeaProjects\POO-TV\.\src\pages\Upgrades.java:7:14: Using the '.*' form of import should be avoided - utils.*. [AvoidStarImport]
 [ERROR] C:\Users\Relea\IdeaProjects\POO-TV\.\src\Test.java:1: File does not end with a newline. [NewlineAtEndOfFile]
 [ERROR] C:\Users\Relea\IdeaProjects\POO-TV\.\src\Test.java:9:28: Using the '.*' form of import should be avoided - java.util.concurrent.*. [AvoidStarImport]
+[ERROR] C:\Users\Relea\IdeaProjects\POO-TV\.\src\Test.java:158: Line is longer than 100 characters (found 108). [LineLength]
+[ERROR] C:\Users\Relea\IdeaProjects\POO-TV\.\src\Test.java:206:65: Parameter testFileName should be final. [FinalParameters]
+[ERROR] C:\Users\Relea\IdeaProjects\POO-TV\.\src\Test.java:222: Line is longer than 100 characters (found 108). [LineLength]
 [ERROR] C:\Users\Relea\IdeaProjects\POO-TV\.\src\utils\Database.java:11:1: Class Database should be declared as final. [FinalClass]
 [ERROR] C:\Users\Relea\IdeaProjects\POO-TV\.\src\utils\Helper.java:5:13: Using the '.*' form of import should be avoided - pages.*. [AvoidStarImport]
 [ERROR] C:\Users\Relea\IdeaProjects\POO-TV\.\src\utils\Helper.java:7:1: Utility classes should not have a public or default constructor. [HideUtilityClassConstructor]
@@ -30,4 +31,4 @@ Starting audit...
 [ERROR] C:\Users\Relea\IdeaProjects\POO-TV\.\src\utils\OutputPrinter.java:46:9: 'else' construct must use '{}'s. [NeedBraces]
 [ERROR] C:\Users\Relea\IdeaProjects\POO-TV\.\src\utils\User.java:51:32: '15' is a magic number. [MagicNumber]
 Audit done.
-Checkstyle ends with 30 errors.
+Checkstyle ends with 31 errors.
