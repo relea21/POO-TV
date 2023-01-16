@@ -7,6 +7,10 @@ public class Monitor {
     private Monitor() {
 
     }
+
+    /**
+     * @return instance
+     */
     public static Monitor getMonitor() {
         if (instance == null) {
             instance = new Monitor();
@@ -20,6 +24,9 @@ public class Monitor {
 
     private boolean autentificated, moviePage;
 
+    /**
+     * start aplication
+     */
     public void startAplication() {
         currentPage = new HomePageUnauthenticated();
         currentPage.changeStatus();

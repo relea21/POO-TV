@@ -43,7 +43,7 @@ public class User extends Subscriber {
             this.purchasedMovies.add(copyMovie);
         }
         this.notifications = new ArrayList<>();
-        for(Notification notification : user.notifications) {
+        for (Notification notification : user.notifications) {
             Notification copyNotification = new Notification(notification);
             this.notifications.add(copyNotification);
         }
@@ -57,7 +57,7 @@ public class User extends Subscriber {
     public User(final Credentials credentials) {
         this.credentials = new Credentials(credentials);
         tokensCount = 0;
-        numFreePremiumMovies = 15;
+        numFreePremiumMovies = Database.NUM_FREE_PREMIUM_MOVIES;
         purchasedMovies = new ArrayList<>();
         watchedMovies = new ArrayList<>();
         likedMovies = new ArrayList<>();
@@ -66,11 +66,17 @@ public class User extends Subscriber {
         rateOfMovie = new HashMap<>();
     }
 
+    /**
+     * @param movieName for notification of add
+     * this is the equivalent of method update in
+     * Observer
+     */
     @Override
-    void notificationAddMovie(String movieName) {
+    void notificationAddMovie(final String movieName) {
         String message = "ADD";
-        for(Movie movie : Database.getDataBase().getMovies()) {
-            if(movie.getName().equals(movieName) && movie.getCountriesBanned().contains(credentials.getCountry())) {
+        for (Movie movie : Database.getDataBase().getMovies()) {
+            if (movie.getName().equals(movieName)
+                    && movie.getCountriesBanned().contains(credentials.getCountry())) {
                 return;
             }
         }
@@ -78,15 +84,20 @@ public class User extends Subscriber {
         notifications.add(notification);
     }
 
-    @Override
-    void notificationDeleteMovie(String movieName) {
+    /**
+     * @param movieName for notification of delete
+     */
+    void notificationDeleteMovie(final String movieName) {
         String message = "DELETE";
         Notification notification = new Notification(movieName, message);
         notifications.add(notification);
         setHasBeenNoticated(true);
     }
 
-    void notificationRecommendationMovie(String movieName) {
+    /**
+     * @param movieName for notification of recommendation
+     */
+    void notificationRecommendationMovie(final String movieName) {
         String message = "Recommendation";
         Notification notification = new Notification(movieName, message);
         notifications.add(notification);
@@ -191,19 +202,31 @@ public class User extends Subscriber {
         this.ratedMovies = ratedMovies;
     }
 
+    /**
+     * @return notifications of user
+     */
     public ArrayList<Notification> getNotifications() {
         return notifications;
     }
 
-    public void setNotifications(ArrayList<Notification> notifications) {
+    /**
+     * @param notifications of user
+     */
+    public void setNotifications(final ArrayList<Notification> notifications) {
         this.notifications = notifications;
     }
 
+    /**
+     * @return hashmap to know what rate is for every movie
+     */
     public HashMap<String, Integer> getRateOfMovie() {
         return rateOfMovie;
     }
 
-    public void setRateOfMovie(HashMap<String, Integer> rateOfMovie) {
+    /**
+     * @param rateOfMovie - hashmap to know what rate is for every movie
+     */
+    public void setRateOfMovie(final HashMap<String, Integer> rateOfMovie) {
         this.rateOfMovie = rateOfMovie;
     }
 }

@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import pages.Page;
 
-
 public class Database {
     private static Database dataBase = null;
     private Database() { }
@@ -30,12 +29,19 @@ public class Database {
     private ArrayList<Movie> movies;
     private ObjectMapper objectMapper;
     private ArrayNode output;
+    /**
+     * this hashmap store a list of subscribers for every genre
+     */
     private HashMap<String, ArrayList<Subscriber>> subscribeHashMap;
+    /**
+     * page where the user have been
+     */
     private LinkedList<Page> pagesHistory = new LinkedList<>();
 
     public static final int MAX_RATE = 5;
     public static final int MOVIE_PRICE = 2;
     public static final int PREMIUM_ACCOUNT_PRICE = 10;
+    public static final int NUM_FREE_PREMIUM_MOVIES =  15;
 
     /**
      * @param input input from the fille to initialize all users in database
@@ -77,9 +83,6 @@ public class Database {
      * @return position of movie in list if exists
      * return -1 if movie doesn't exist
      */
-    //check if the movie exists in an ArrayList of movies
-    //return position of movie in list if exists
-    //return -1 if movie doesn't exist
     public int checkIfTheMovieExist(final String movieName, final ArrayList<Movie> movies) {
         for (int i = 0; i < movies.size(); i++) {
             if (movies.get(i).getName().equals(movieName)) {
@@ -91,6 +94,7 @@ public class Database {
 
     /**
      * @param movieInput - movie that will be added in Database
+     * method to add a new movie in database
      */
     public void addMovie(final MovieInput movieInput) {
 
@@ -109,6 +113,7 @@ public class Database {
 
         for (String genre : newMovie.getGenres()) {
             if (subscribeHashMap.containsKey(genre)) {
+                // this list contains all subscribers of a genre
                 ArrayList<Subscriber> subscribers = subscribeHashMap.get(genre);
                 for (Subscriber subscriber : subscribers) {
                     if (!subscriber.isHasBeenNoticated()) {
@@ -125,6 +130,10 @@ public class Database {
         }
     }
 
+    /**
+     * @param deletedMovie - movie that will be deleted from Database
+     * method to delete a movie from database
+     */
     public void deleteMovie(final String deletedMovie) {
         ArrayList<User> users = new ArrayList<>(usersHashMap.values());
         int indexInDatabase = checkIfTheMovieExist(deletedMovie, movies);

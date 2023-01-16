@@ -45,8 +45,11 @@ public class Login extends Page {
         }
     }
 
+    /**
+     * @param action to be done on this page
+     */
     @Override
-    public void actionOnPage(ActionInput action) {
+    public void actionOnPage(final ActionInput action) {
         switch (action.getFeature()) {
             case "login":
                 loginAction(action.getCredentials());
@@ -56,6 +59,9 @@ public class Login extends Page {
         }
     }
 
+    /**
+     * @return if it can move on this page
+     */
     @Override
     public boolean checkMoveOn() {
         return !Monitor.getMonitor().isAutentificated();

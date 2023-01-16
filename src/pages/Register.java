@@ -35,12 +35,16 @@ public class Register extends Page {
 
         newPage.changeStatus();
         Monitor.getMonitor().setCurrentPage(newPage);
-        if (Monitor.getMonitor().isAutentificated())
+        if (Monitor.getMonitor().isAutentificated()) {
             OutputPrinter.printAction();
+        }
     }
 
+    /**
+     * @param action to be done on this page
+     */
     @Override
-    public void actionOnPage(ActionInput action) {
+    public void actionOnPage(final ActionInput action) {
         switch (action.getFeature()) {
             case "register":
                 registerAction(action.getCredentials());
@@ -50,6 +54,9 @@ public class Register extends Page {
         }
     }
 
+    /**
+     * @return if it can move on this page
+     */
     @Override
     public boolean checkMoveOn() {
         return !Monitor.getMonitor().isAutentificated();

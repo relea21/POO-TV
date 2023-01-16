@@ -5,7 +5,10 @@ import pages.Page;
 import utils.Database;
 import utils.OutputPrinter;
 
-public class BackAction implements  Action{
+public class BackAction implements  Action {
+    /**
+     * execute back action
+     */
     @Override
     public void execute() {
         if (Database.getDataBase().getPagesHistory().size() == 0) {

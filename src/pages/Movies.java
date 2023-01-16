@@ -65,75 +65,82 @@ public class Movies extends Page {
         OutputPrinter.printAction();
     }
 
+    private void sortRating(final boolean ratingOrder) {
+        ArrayList<Movie> movies = Monitor.getMonitor().getCurrentMovies();
+        if (ratingOrder) {
+            //increasing order
+            movies.sort((o1, o2) -> Double.compare(o1.getRating(), o2.getRating()));
+        } else {
+            //decreasing order
+            movies.sort((o1, o2) -> Double.compare(o2.getRating(), o1.getRating()));
+        }
+    }
+
+    private void sortDuration(final boolean durationOrder) {
+        ArrayList<Movie> movies = Monitor.getMonitor().getCurrentMovies();
+        if (durationOrder) {
+            movies.sort((o1, o2) -> o1.getDuration() - o2.getDuration());
+        } else {
+            movies.sort((o1, o2) -> o2.getDuration() - o1.getDuration());
+        }
+    }
+
+    private void sortRatingAndDuration(final boolean ratingOrder, final boolean durationOrder) {
+        ArrayList<Movie> movies = Monitor.getMonitor().getCurrentMovies();
+        movies.sort(new Comparator<Movie>() {
+            @Override
+            public int compare(final Movie o1, final Movie o2) {
+                if (o1.getDuration() == o2.getDuration()) {
+                    if (ratingOrder) {
+                        return Double.compare(o1.getRating(), o2.getRating());
+                    } else {
+                        return -Double.compare(o1.getRating(), o2.getRating());
+                    }
+                } else {
+                    if (durationOrder) {
+                        return o1.getDuration() - o2.getDuration();
+                    } else {
+                        return o2.getDuration() - o1.getDuration();
+                    }
+                }
+            }
+        });
+    }
+
     private void filterActionSort(final FilterInput filter) {
         ArrayList<Movie> movies = Monitor.getMonitor().getCurrentMovies();
         if (filter.getSort().getDuration() != null && filter.getSort().getRating() == null) {
+            boolean durationOrder;
             if (filter.getSort().getDuration().equals("decreasing")) {
-                movies.sort((o1, o2) -> o2.getDuration() - o1.getDuration());
+                durationOrder =  false;
             } else {
-                movies.sort((o1, o2) -> o1.getDuration() - o2.getDuration());
+                durationOrder = true;
             }
+            sortDuration(durationOrder);
         }
         if (filter.getSort().getRating() != null && filter.getSort().getDuration() == null) {
+            boolean ratingOrder;
             if (filter.getSort().getRating().equals("decreasing")) {
-                movies.sort((o1, o2) -> Double.compare(o2.getRating(), o1.getRating()));
+                ratingOrder = false;
             } else {
-                movies.sort((o1, o2) -> Double.compare(o1.getRating(), o2.getRating()));
+                ratingOrder = true;
             }
+            sortRating(ratingOrder);
         }
         if (filter.getSort().getDuration() != null && filter.getSort().getRating() != null) {
-            if (filter.getSort().getDuration().equals("decreasing")
-                    && filter.getSort().getRating().equals("decreasing")) {
-                movies.sort(new Comparator<Movie>() {
-                    @Override
-                    public int compare(final Movie o1, final Movie o2) {
-                        if (o1.getDuration() == o2.getDuration()) {
-                            return -Double.compare(o1.getRating(), o2.getRating());
-                        } else {
-                            return o2.getDuration() - o1.getDuration();
-                        }
-                    }
-                });
+            boolean durationOrder;
+            boolean ratingOrder;
+            if (filter.getSort().getDuration().equals("decreasing")) {
+                durationOrder = false;
+            } else {
+                durationOrder = true;
             }
-            if (filter.getSort().getDuration().equals("increasing")
-                    && filter.getSort().getRating().equals("decreasing")) {
-                movies.sort(new Comparator<Movie>() {
-                    @Override
-                    public int compare(final Movie o1, final Movie o2) {
-                        if (o1.getDuration() == o2.getDuration()) {
-                            return -Double.compare(o1.getRating(), o2.getRating());
-                        } else {
-                            return o1.getDuration() - o2.getDuration();
-                        }
-                    }
-                });
+            if (filter.getSort().getRating().equals("decreasing")) {
+                ratingOrder = false;
+            } else {
+                ratingOrder = true;
             }
-            if (filter.getSort().getDuration().equals("increasing")
-                    && filter.getSort().getRating().equals("increasing")) {
-                movies.sort(new Comparator<Movie>() {
-                    @Override
-                    public int compare(final Movie o1, final Movie o2) {
-                        if (o1.getDuration() == o2.getDuration()) {
-                            return Double.compare(o1.getRating(), o2.getRating());
-                        } else {
-                            return o1.getDuration() - o2.getDuration();
-                        }
-                    }
-                });
-            }
-            if (filter.getSort().getDuration().equals("decreasing")
-                    && filter.getSort().getRating().equals("increasing")) {
-                movies.sort(new Comparator<Movie>() {
-                    @Override
-                    public int compare(final Movie o1, final Movie o2) {
-                        if (o1.getDuration() == o2.getDuration()) {
-                            return Double.compare(o1.getRating(), o2.getRating());
-                        } else {
-                            return o2.getDuration() - o1.getDuration();
-                        }
-                    }
-                });
-            }
+            sortRatingAndDuration(ratingOrder, durationOrder);
         }
     }
 
@@ -162,8 +169,11 @@ public class Movies extends Page {
         }
     }
 
+    /**
+     * @param action to be done on this page
+     */
     @Override
-    public void actionOnPage(ActionInput action) {
+    public void actionOnPage(final ActionInput action) {
         switch (action.getFeature()) {
             case "search":
                 searchAction(action.getStartsWith());
@@ -176,6 +186,9 @@ public class Movies extends Page {
         }
     }
 
+    /**
+     * @return if it can move on this page
+     */
     @Override
     public boolean checkMoveOn() {
         return Monitor.getMonitor().isAutentificated();

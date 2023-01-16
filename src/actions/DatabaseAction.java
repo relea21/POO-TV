@@ -7,10 +7,13 @@ public class DatabaseAction implements Action {
 
     private ActionInput action;
 
-    public DatabaseAction(ActionInput action) {
+    public DatabaseAction(final ActionInput action) {
         this.action = action;
     }
 
+    /**
+     * execute database action
+     */
     @Override
     public void execute() {
         switch (action.getFeature()) {

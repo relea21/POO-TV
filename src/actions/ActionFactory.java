@@ -13,14 +13,22 @@ public class ActionFactory {
 
     }
 
+    /**
+     * @return get the instance for factory
+     */
     public static ActionFactory getActionFactory() {
-        if(instance == null)
+        if (instance == null) {
             instance = new ActionFactory();
+        }
         return instance;
     }
 
-    public Action getAction(ActionInput action) {
-        switch(action.getType()) {
+    /**
+     * @param action to be executed
+     * @return command for invoker
+     */
+    public Action getAction(final ActionInput action) {
+        switch (action.getType()) {
             case "change page":
                 return new ChangePageAction(action);
             case "on page":

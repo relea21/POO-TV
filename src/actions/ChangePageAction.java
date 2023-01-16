@@ -1,7 +1,13 @@
 package actions;
 
 import input.ActionInput;
-import pages.*;
+
+import pages.Monitor;
+import pages.Page;
+import pages.HomePageUnauthenticated;
+import pages.SeeDetails;
+import pages.PageFactory;
+
 import utils.Database;
 import utils.Movie;
 import utils.OutputPrinter;
@@ -9,10 +15,13 @@ import utils.OutputPrinter;
 public class ChangePageAction implements  Action {
     private ActionInput action;
 
-    public ChangePageAction(ActionInput action) {
+    public ChangePageAction(final ActionInput action) {
         this.action = action;
     }
 
+    /**
+     * execute change page action
+     */
     @Override
     public void execute() {
         Page newPage = null;
@@ -40,18 +49,21 @@ public class ChangePageAction implements  Action {
                     OutputPrinter.printError();
                 }
             }
-
+            // can move on that page
             if (newPage != null) {
-                if(Monitor.getMonitor().isAutentificated())
+                if (Monitor.getMonitor().isAutentificated()) {
                     Database.getDataBase().getPagesHistory().push(currentPage);
+                }
                 newPage.changeStatus();
                 Monitor.getMonitor().setCurrentPage(newPage);
             }
         }  else {
             newPage = PageFactory.getPageFactory().createNewPage(action.getPage());
             if (newPage.checkMoveOn()) {
-                if (Monitor.getMonitor().isAutentificated())
+                // can move on that page
+                if (Monitor.getMonitor().isAutentificated()) {
                     Database.getDataBase().getPagesHistory().push(currentPage);
+                }
                 newPage.changeStatus();
                 Monitor.getMonitor().setCurrentPage(newPage);
             } else {

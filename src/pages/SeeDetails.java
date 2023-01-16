@@ -60,7 +60,10 @@ public class SeeDetails extends Page {
         }
     }
 
-    private void subscribeAction(String subscribedGenre) {
+    /**
+     * @param subscribedGenre - genre to subscribe to
+     */
+    private void subscribeAction(final String subscribedGenre) {
         User user = Monitor.getMonitor().getCurrentUser();
 
         if (!movie.getGenres().contains(subscribedGenre)) {
@@ -148,8 +151,11 @@ public class SeeDetails extends Page {
         }
     }
 
+    /**
+     * @param action to be done on this page
+     */
     @Override
-    public void actionOnPage(ActionInput action) {
+    public void actionOnPage(final ActionInput action) {
         switch (action.getFeature()) {
             case "purchase":
                 purchaseAction();
@@ -171,6 +177,9 @@ public class SeeDetails extends Page {
         }
     }
 
+    /**
+     * @return if it can move on this page
+     */
     @Override
     public boolean checkMoveOn() {
         return Monitor.getMonitor().isAutentificated();

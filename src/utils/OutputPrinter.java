@@ -28,6 +28,9 @@ public class OutputPrinter {
         printMessage(error, currentMoviesList, currentUser);
     }
 
+    /**
+     * print the recommendation
+     */
     public static void printRecommendation() {
         String error = null;
         ArrayList<Movie> currentMoviesList = null;
@@ -43,7 +46,7 @@ public class OutputPrinter {
 
         printer.put("error", error);
 
-        if(currentMoviesList != null) {
+        if (currentMoviesList != null) {
             ArrayList<Movie> copyCurrentMoviesList = new ArrayList<>();
 
             for (Movie movie : currentMoviesList) {
@@ -55,10 +58,11 @@ public class OutputPrinter {
             printer.putPOJO("currentMoviesList", null);
         }
 
-        if (currentUser != null)
+        if (currentUser != null) {
             printer.putPOJO("currentUser", new User(currentUser));
-        else
+        } else {
             printer.putPOJO("currentUser", null);
+        }
         output.add(printer);
     }
 }
