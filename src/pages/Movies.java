@@ -1,5 +1,6 @@
 package pages;
 
+import input.ActionInput;
 import input.FilterInput;
 
 import java.util.ArrayList;
@@ -7,7 +8,6 @@ import java.util.Comparator;
 import utils.*;
 public class Movies extends Page {
     public Movies() {
-        super();
     }
 
     /**
@@ -16,12 +16,9 @@ public class Movies extends Page {
     @Override
     public void changeStatus() {
         Monitor.getMonitor().setMoviePage(true);
-        Monitor.getMonitor().setUpgradePage(false);
-        Monitor.getMonitor().setSeeDetailsMovie(false);
-        Monitor.getMonitor().setRegister(false);
-        Monitor.getMonitor().setLogin(false);
         createMoviesList();
         OutputPrinter.printAction();
+
     }
 
     /**
@@ -41,7 +38,7 @@ public class Movies extends Page {
     /**
      * @param startWith string for searching movies
      */
-    public void searchAction(final String startWith) {
+    private void searchAction(final String startWith) {
         createMoviesList();
         ArrayList<Movie> movies = Monitor.getMonitor().getCurrentMovies();
         for (int i = 0; i < movies.size(); i++) {
@@ -57,7 +54,7 @@ public class Movies extends Page {
     /**
      * @param filter used for filter action
      */
-    public void filterAction(final FilterInput filter) {
+    private void filterAction(final FilterInput filter) {
         createMoviesList();
         if (filter.getSort() != null) {
             filterActionSort(filter);
@@ -165,4 +162,22 @@ public class Movies extends Page {
         }
     }
 
+    @Override
+    public void actionOnPage(ActionInput action) {
+        switch (action.getFeature()) {
+            case "search":
+                searchAction(action.getStartsWith());
+                break;
+            case "filter":
+                filterAction(action.getFilters());
+                break;
+            default:
+                OutputPrinter.printError();
+        }
+    }
+
+    @Override
+    public boolean checkMoveOn() {
+        return Monitor.getMonitor().isAutentificated();
+    }
 }

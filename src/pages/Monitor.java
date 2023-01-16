@@ -18,9 +18,7 @@ public class Monitor {
     private Page currentPage;
     private ArrayList<Movie> currentMovies;
 
-    private boolean autentificated, moviePage, seeDetailsMovie;
-    private boolean upgradePage;
-    private boolean login, register;
+    private boolean autentificated, moviePage;
 
     public void startAplication() {
         currentPage = new HomePageUnauthenticated();
@@ -69,35 +67,4 @@ public class Monitor {
         this.moviePage = moviePage;
     }
 
-    public boolean isSeeDetailsMovie() {
-        return seeDetailsMovie;
-    }
-
-    public void setSeeDetailsMovie(final boolean seeDetailsMovie) {
-        this.seeDetailsMovie = seeDetailsMovie;
-    }
-
-    public boolean isUpgradePage() {
-        return upgradePage;
-    }
-
-    public void setUpgradePage(final boolean upgradePage) {
-        this.upgradePage = upgradePage;
-    }
-
-    public boolean isLogin() {
-        return login;
-    }
-
-    public void setLogin(final boolean login) {
-        this.login = login;
-    }
-
-    public boolean isRegister() {
-        return register;
-    }
-
-    public void setRegister(final boolean register) {
-        this.register = register;
-    }
 }

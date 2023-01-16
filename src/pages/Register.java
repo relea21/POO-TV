@@ -1,10 +1,11 @@
 package pages;
 
+import input.ActionInput;
 import input.Credentials;
 import utils.*;
 public class Register extends Page {
     public Register() {
-        super();
+
     }
     /**
      * change status of page
@@ -13,17 +14,13 @@ public class Register extends Page {
     public void changeStatus() {
         Monitor.getMonitor().setAutentificated(false);
         Monitor.getMonitor().setMoviePage(false);
-        Monitor.getMonitor().setUpgradePage(false);
-        Monitor.getMonitor().setSeeDetailsMovie(false);
-        Monitor.getMonitor().setRegister(true);
-        Monitor.getMonitor().setLogin(false);
     }
 
     /**
      * @param credentials for a new user
      * register action
      */
-    public void registerAction(final Credentials credentials) {
+    private void registerAction(final Credentials credentials) {
         String name = credentials.getName();
         Page newPage;
         if (Database.getDataBase().getUsersHashMap().containsKey(name)) {
@@ -40,5 +37,21 @@ public class Register extends Page {
         Monitor.getMonitor().setCurrentPage(newPage);
         if (Monitor.getMonitor().isAutentificated())
             OutputPrinter.printAction();
+    }
+
+    @Override
+    public void actionOnPage(ActionInput action) {
+        switch (action.getFeature()) {
+            case "register":
+                registerAction(action.getCredentials());
+                break;
+            default:
+                OutputPrinter.printError();
+        }
+    }
+
+    @Override
+    public boolean checkMoveOn() {
+        return !Monitor.getMonitor().isAutentificated();
     }
 }

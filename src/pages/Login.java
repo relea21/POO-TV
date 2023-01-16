@@ -1,10 +1,10 @@
 package pages;
 
+import input.ActionInput;
 import input.Credentials;
 import utils.*;
 public class Login extends Page {
     public Login() {
-        super();
     }
 
     /**
@@ -14,17 +14,13 @@ public class Login extends Page {
     public void changeStatus() {
         Monitor.getMonitor().setAutentificated(false);
         Monitor.getMonitor().setMoviePage(false);
-        Monitor.getMonitor().setUpgradePage(false);
-        Monitor.getMonitor().setSeeDetailsMovie(false);
-        Monitor.getMonitor().setRegister(false);
-        Monitor.getMonitor().setLogin(true);
     }
 
     /**
-     * @param credentials of user that try to login
+     * @param credentials of user that try to log in
      * pages.Login action
      */
-    public void loginAction(final Credentials credentials) {
+    private void loginAction(final Credentials credentials) {
         String name = credentials.getName();
 
         Page newPage;
@@ -47,5 +43,21 @@ public class Login extends Page {
         if (Monitor.getMonitor().isAutentificated()) {
             OutputPrinter.printAction();
         }
+    }
+
+    @Override
+    public void actionOnPage(ActionInput action) {
+        switch (action.getFeature()) {
+            case "login":
+                loginAction(action.getCredentials());
+                break;
+            default:
+                OutputPrinter.printError();
+        }
+    }
+
+    @Override
+    public boolean checkMoveOn() {
+        return !Monitor.getMonitor().isAutentificated();
     }
 }

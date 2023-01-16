@@ -1,13 +1,14 @@
 package pages;
 
 import java.util.ArrayList;
+
+import input.ActionInput;
 import utils.*;
 
 
 public class SeeDetails extends Page {
     private Movie movie;
     public SeeDetails() {
-        super();
     }
 
     public SeeDetails(final String movieTitle) {
@@ -28,40 +29,62 @@ public class SeeDetails extends Page {
         Monitor.getMonitor().setCurrentMovies(movies);
 
         Monitor.getMonitor().setMoviePage(false);
-        Monitor.getMonitor().setUpgradePage(false);
-        Monitor.getMonitor().setSeeDetailsMovie(true);
-        Monitor.getMonitor().setRegister(false);
-        Monitor.getMonitor().setLogin(false);
-
         OutputPrinter.printAction();
     }
+
+
 
     /**
      * purchase action
      */
-    public void purchaseAction() {
+    private void purchaseAction() {
         User user = Monitor.getMonitor().getCurrentUser();
         int userTokens = user.getTokensCount();
-        if (user.getCredentials().getAccountType().equals("premium")
-                        && user.getNumFreePremiumMovies() > 0) {
-            int userFreeMovies = user.getNumFreePremiumMovies();
-            user.setNumFreePremiumMovies(userFreeMovies - 1);
-        } else {
-            if (userTokens < 2) {
-                OutputPrinter.printError();
-                return;
+        if (!user.getPurchasedMovies().contains(movie)) {
+            if (user.getCredentials().getAccountType().equals("premium")
+                    && user.getNumFreePremiumMovies() > 0) {
+                int userFreeMovies = user.getNumFreePremiumMovies();
+                user.setNumFreePremiumMovies(userFreeMovies - 1);
+            } else {
+                if (userTokens < Database.MOVIE_PRICE) {
+                    OutputPrinter.printError();
+                    return;
+                }
+                userTokens -= Database.MOVIE_PRICE;
+                user.setTokensCount(userTokens);
             }
-            userTokens -= 2;
-            user.setTokensCount(userTokens);
+            user.getPurchasedMovies().add(movie);
+            OutputPrinter.printAction();
+        } else {
+            OutputPrinter.printError();
         }
-        user.getPurchasedMovies().add(movie);
-        OutputPrinter.printAction();
+    }
+
+    private void subscribeAction(String subscribedGenre) {
+        User user = Monitor.getMonitor().getCurrentUser();
+
+        if (!movie.getGenres().contains(subscribedGenre)) {
+            OutputPrinter.printError();
+            return;
+        }
+
+        if (Database.getDataBase().getSubscribeHashMap().containsKey(subscribedGenre)) {
+            if (Database.getDataBase().getSubscribeHashMap().get(subscribedGenre).contains(user)) {
+                OutputPrinter.printError();
+            } else {
+                Database.getDataBase().getSubscribeHashMap().get(subscribedGenre).add(user);
+            }
+        } else {
+            ArrayList<Subscriber> subscribers = new ArrayList<>();
+            subscribers.add(user);
+            Database.getDataBase().getSubscribeHashMap().put(subscribedGenre, subscribers);
+        }
     }
 
     /**
      * watch action
      */
-    public void watchAction() {
+    private void watchAction() {
         User user = Monitor.getMonitor().getCurrentUser();
         if (user.getPurchasedMovies().contains(movie)) {
             if (!user.getWatchedMovies().contains(movie)) {
@@ -76,7 +99,7 @@ public class SeeDetails extends Page {
     /**
      * like action
      */
-    public void likeAction() {
+    private void likeAction() {
         User user = Monitor.getMonitor().getCurrentUser();
 
         if (user.getWatchedMovies().contains(movie)) {
@@ -95,7 +118,7 @@ public class SeeDetails extends Page {
      * @param rate for movie
      * rate action
      */
-    public void rateAction(final int rate) {
+    private void rateAction(final int rate) {
         User user = Monitor.getMonitor().getCurrentUser();
         if (rate > Database.MAX_RATE) {
             OutputPrinter.printError();
@@ -110,11 +133,48 @@ public class SeeDetails extends Page {
                 movie.setNumRatings(numRating);
                 movie.setSumRating(sumRating);
                 movie.setRating(sumRating / numRating);
+                user.getRateOfMovie().put(movie.getName(), rate);
+            } else {
+                Double sumRating = movie.getSumRating();
+                int numRating = movie.getNumRatings();
+                sumRating -= user.getRateOfMovie().get(movie.getName());
+                sumRating += rate;
+                movie.setSumRating(sumRating);
+                movie.setRating(sumRating / numRating);
             }
             OutputPrinter.printAction();
         } else {
             OutputPrinter.printError();
         }
+    }
+
+    @Override
+    public void actionOnPage(ActionInput action) {
+        switch (action.getFeature()) {
+            case "purchase":
+                purchaseAction();
+                break;
+            case "watch":
+                watchAction();
+                break;
+            case "like":
+                likeAction();
+                break;
+            case "rate":
+                rateAction(action.getRate());
+                break;
+            case "subscribe":
+                subscribeAction(action.getSubscribedGenre());
+                break;
+            default:
+                OutputPrinter.printError();
+        }
+    }
+
+    @Override
+    public boolean checkMoveOn() {
+        return Monitor.getMonitor().isAutentificated();
+
     }
 
     /**

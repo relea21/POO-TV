@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class Movie {
     private String name;
-    private int year;
+    private String year;
     private int duration;
     private ArrayList<String> genres;
     private ArrayList<String> actors;
@@ -17,7 +17,7 @@ public class Movie {
     @JsonIgnore
     private Double sumRating;
 
-    public Movie(final String name, final int year, final int duration,
+    public Movie(final String name, final String year, final int duration,
                  final ArrayList<String> genres, final ArrayList<String> actors,
                  final ArrayList<String> countriesBanned) {
         this.name = name;
@@ -62,14 +62,14 @@ public class Movie {
     /**
      * @return year the film was released
      */
-    public int getYear() {
+    public String getYear() {
         return year;
     }
 
     /**
      * @param year the film was released
      */
-    public void setYear(final int year) {
+    public void setYear(final String year) {
         this.year = year;
     }
 

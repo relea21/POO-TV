@@ -1,8 +1,16 @@
 package utils;
 
+import actions.BackAction;
+import actions.ChangePageAction;
+import actions.DatabaseAction;
 import input.Input;
 import input.ActionInput;
 import pages.*;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Helper {
 
@@ -10,164 +18,41 @@ public class Helper {
      * @param action to be done
      */
     public static void executeActionOnPage(final ActionInput action) {
-        switch (action.getFeature()) {
-            case "login":
-                if (Monitor.getMonitor().isLogin()) {
-                    Login loginPage = (Login) Monitor.getMonitor().getCurrentPage();
-                    loginPage.loginAction(action.getCredentials());
-                } else {
-                    OutputPrinter.printError();
-                }
-                break;
-            case "register":
-                if (Monitor.getMonitor().isRegister()) {
-                    Register registerPage = (Register) Monitor.getMonitor().getCurrentPage();
-                    registerPage.registerAction(action.getCredentials());
-                } else {
-                    OutputPrinter.printError();
-                }
-                break;
-            case "search":
-                if (Monitor.getMonitor().isMoviePage()) {
-                    Movies moviesPage = (Movies) Monitor.getMonitor().getCurrentPage();
-                    moviesPage.searchAction(action.getStartsWith());
-                 } else {
-                    OutputPrinter.printError();
-                }
-                break;
-            case "filter":
-                if (Monitor.getMonitor().isMoviePage()) {
-                    Movies moviesPage = (Movies) Monitor.getMonitor().getCurrentPage();
-                    moviesPage.filterAction(action.getFilters());
-                } else {
-                    OutputPrinter.printError();
-                }
-                break;
-            case "buy tokens":
-                if (Monitor.getMonitor().isUpgradePage()) {
-                    Upgrades upgradePage = (Upgrades) Monitor.getMonitor().getCurrentPage();
-                    upgradePage.buyTokensAction(action);
-                } else {
-                    OutputPrinter.printError();
-                }
-                break;
-            case "buy premium account":
-                if (Monitor.getMonitor().isUpgradePage()) {
-                    Upgrades upgradePage = (Upgrades) Monitor.getMonitor().getCurrentPage();
-                    upgradePage.buyPremiumAccount();
-                } else {
-                    OutputPrinter.printError();
-                }
-                break;
-            case "purchase":
-                if (Monitor.getMonitor().isSeeDetailsMovie()) {
-                    SeeDetails seeDetailsPage = (SeeDetails) Monitor.getMonitor().getCurrentPage();
-                    seeDetailsPage.purchaseAction();
-                } else {
-                    OutputPrinter.printError();
-                }
-                break;
-            case "watch":
-                if (Monitor.getMonitor().isSeeDetailsMovie()) {
-                    SeeDetails seeDetailsPage = (SeeDetails) Monitor.getMonitor().getCurrentPage();
-                    seeDetailsPage.watchAction();
-                } else {
-                    OutputPrinter.printError();
-                }
-                break;
-            case "like":
-                if (Monitor.getMonitor().isSeeDetailsMovie()) {
-                    SeeDetails seeDetailsPage = (SeeDetails) Monitor.getMonitor().getCurrentPage();
-                    seeDetailsPage.likeAction();
-                } else {
-                    OutputPrinter.printError();
-                }
-                break;
-            case "rate":
-                if (Monitor.getMonitor().isSeeDetailsMovie()) {
-                    SeeDetails seeDetailsPage = (SeeDetails) Monitor.getMonitor().getCurrentPage();
-                    seeDetailsPage.rateAction(action.getRate());
-                } else {
-                    OutputPrinter.printError();
-                }
-                break;
-            default:
-                System.out.println("action invalid");
-        }
+        Monitor.getMonitor().getCurrentPage().actionOnPage(action);
     }
 
     /**
      * @param action to be done
      */
     public static void executeActionChangePage(final ActionInput action) {
-        Page newPage = null;
-
-        switch (action.getPage()) {
-            case "login":
-                if (!Monitor.getMonitor().isAutentificated()) {
-                    newPage = new Login();
-                } else {
-                    OutputPrinter.printError();
-                }
-                break;
-            case "register":
-                if (!Monitor.getMonitor().isAutentificated()) {
-                    newPage = new Register();
-                } else {
-                    OutputPrinter.printError();
-                }
-                break;
-            case "logout":
-                if (Monitor.getMonitor().isAutentificated()) {
-                    newPage = new HomePageUnauthenticated();
-                } else {
-                    OutputPrinter.printError();
-                }
-                break;
-            case "movies":
-                if (Monitor.getMonitor().isAutentificated()) {
-                    newPage = new Movies();
-                } else {
-                    OutputPrinter.printError();
-                }
-                break;
-            case "see details":
-                boolean sw = false;
-                if (Monitor.getMonitor().isMoviePage()) {
-                    for (Movie movie : Monitor.getMonitor().getCurrentMovies()) {
-                        if (movie.getName().equals(action.getMovie())) {
-                            newPage = new SeeDetails(action.getMovie());
-                            sw = true;
-                        }
-                    }
-                }
-                if (!sw) {
-                    OutputPrinter.printError();
-                }
-                break;
-            case "upgrades":
-                if (Monitor.getMonitor().isAutentificated()) {
-                    newPage = new Upgrades();
-                } else {
-                    OutputPrinter.printError();
-                }
-                break;
-            default:
-                System.out.println(action.getPage());
-                System.out.println("Nu exista pagina asta!!!");
-        }
-
-        if (newPage != null) {
-            newPage.changeStatus();
-            Monitor.getMonitor().setCurrentPage(newPage);
-        }
+        ChangePageAction command = new ChangePageAction(action);
+        command.execute();
     }
 
 
+    public static void executeActionDatabase(final ActionInput action) {
+//        switch (action.getFeature()) {
+//            case "add":
+//                Database.getDataBase().addMovie(action.getAddedMovie());
+//                break;
+//            case "delete":
+//                Database.getDataBase().deleteMovie(action.getDeletedMovie());
+//                break;
+//            default:
+//                System.out.println("Invalid command");
+//        }
+        DatabaseAction command = new DatabaseAction(action);
+        command.execute();
+    }
+
+    public static void executeActionBack(final ActionInput action) {
+        BackAction command = new BackAction();
+        command.execute();
+    }
     /**
      * @param inputData action to be done
      */
-    public static void  executeAction(final Input inputData) {
+    public static void  executeActions(final Input inputData) {
         for (ActionInput actionInput : inputData.getActions()) {
             if (actionInput.getType().equals("change page")) {
                 executeActionChangePage(actionInput);
@@ -175,6 +60,76 @@ public class Helper {
             if (actionInput.getType().equals("on page")) {
                 executeActionOnPage(actionInput);
             }
+            if (actionInput.getType().equals("database")) {
+                executeActionDatabase(actionInput);
+            }
+            if (actionInput.getType().equals("back")) {
+                executeActionBack(actionInput);
+            }
         }
+        User currUser = Monitor.getMonitor().getCurrentUser();
+        if(Monitor.getMonitor().isAutentificated() &&
+                Monitor.getMonitor()
+                        .getCurrentUser()
+                        .getCredentials()
+                        .getAccountType()
+                        .equals("premium")) {
+            HashMap<String, Integer> likedGenres = new HashMap<>();
+            for(Movie movie : currUser.getLikedMovies()) {
+                for (String genre : movie.getGenres()) {
+                    if (likedGenres.containsKey(genre)) {
+                        int numLikes = likedGenres.get(genre);
+                        numLikes++;
+                        likedGenres.put(genre, numLikes);
+                    } else {
+                        Integer numLikes = 0;
+                        likedGenres.put(genre, numLikes);
+                    }
+                }
+            }
+            ArrayList<String> sortedGenres = new ArrayList<>();
+            while(likedGenres.size() > 0) {
+                Integer max = -1;
+                String maximGenre = "No gender";
+                for (Map.Entry<String, Integer> entry : likedGenres.entrySet()) {
+                    if(entry.getValue() > max) {
+                        max = entry.getValue();
+                        maximGenre = entry.getKey();
+                    } else {
+                        if (entry.getValue() == max && entry.getKey().compareTo(maximGenre) < 0) {
+                            max = entry.getValue();
+                            maximGenre = entry.getKey();
+                        }
+                    }
+                }
+                sortedGenres.add(maximGenre);
+                likedGenres.remove(maximGenre);
+            }
+
+            if(sortedGenres.size() == 0) {
+                currUser.notificationRecommendationMovie("No recommendation");
+                OutputPrinter.printRecommendation();
+                return;
+            }
+
+            ArrayList<Movie> sortedMovies = new ArrayList<>(Database.getDataBase().getMovies());
+            sortedMovies.sort(Comparator.comparingInt(Movie::getNumLikes).reversed());
+
+            for (String genre : sortedGenres) {
+                for (Movie movie : sortedMovies) {
+                    if (movie.getGenres().contains(genre) &&
+                            Database.getDataBase()
+                                    .checkIfTheMovieExist(movie.getName(), currUser.getWatchedMovies()) == -1) {
+                        currUser.notificationRecommendationMovie(movie.getName());
+                        OutputPrinter.printRecommendation();
+                        return;
+                    }
+                }
+            }
+
+            currUser.notificationRecommendationMovie("No recommendation");
+            OutputPrinter.printRecommendation();
+        }
+
     }
 }

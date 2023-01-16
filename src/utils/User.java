@@ -1,10 +1,12 @@
 package utils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import input.Credentials;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
-public class User {
+public class User extends Subscriber {
     private Credentials credentials;
     private int tokensCount;
     private int numFreePremiumMovies;
@@ -12,10 +14,10 @@ public class User {
     private ArrayList<Movie> watchedMovies;
     private ArrayList<Movie> likedMovies;
     private ArrayList<Movie> ratedMovies;
+    private ArrayList<Notification> notifications;
 
-    public User() {
-
-    }
+    @JsonIgnore
+    private HashMap<String, Integer> rateOfMovie;
 
     public User(final User user) {
         this.credentials = new Credentials(user.credentials);
@@ -40,6 +42,13 @@ public class User {
             Movie copyMovie = new Movie(movie);
             this.purchasedMovies.add(copyMovie);
         }
+        this.notifications = new ArrayList<>();
+        for(Notification notification : user.notifications) {
+            Notification copyNotification = new Notification(notification);
+            this.notifications.add(copyNotification);
+        }
+
+        this.rateOfMovie = new HashMap<>(user.rateOfMovie);
 
         this.tokensCount = user.tokensCount;
         this.numFreePremiumMovies = user.numFreePremiumMovies;
@@ -53,6 +62,35 @@ public class User {
         watchedMovies = new ArrayList<>();
         likedMovies = new ArrayList<>();
         ratedMovies = new ArrayList<>();
+        notifications = new ArrayList<>();
+        rateOfMovie = new HashMap<>();
+    }
+
+    @Override
+    void notificationAddMovie(String movieName) {
+        String message = "ADD";
+        for(Movie movie : Database.getDataBase().getMovies()) {
+            if(movie.getName().equals(movieName) && movie.getCountriesBanned().contains(credentials.getCountry())) {
+                return;
+            }
+        }
+        Notification notification = new Notification(movieName, message);
+        notifications.add(notification);
+    }
+
+    @Override
+    void notificationDeleteMovie(String movieName) {
+        String message = "DELETE";
+        Notification notification = new Notification(movieName, message);
+        notifications.add(notification);
+        setHasBeenNoticated(true);
+    }
+
+    void notificationRecommendationMovie(String movieName) {
+        String message = "Recommendation";
+        Notification notification = new Notification(movieName, message);
+        notifications.add(notification);
+        setHasBeenNoticated(true);
     }
 
     /**
@@ -153,5 +191,19 @@ public class User {
         this.ratedMovies = ratedMovies;
     }
 
+    public ArrayList<Notification> getNotifications() {
+        return notifications;
+    }
 
+    public void setNotifications(ArrayList<Notification> notifications) {
+        this.notifications = notifications;
+    }
+
+    public HashMap<String, Integer> getRateOfMovie() {
+        return rateOfMovie;
+    }
+
+    public void setRateOfMovie(HashMap<String, Integer> rateOfMovie) {
+        this.rateOfMovie = rateOfMovie;
+    }
 }

@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import  utils.*;
 public class Upgrades extends Page {
     public Upgrades() {
-        super();
     }
 
     /**
@@ -19,10 +18,7 @@ public class Upgrades extends Page {
         Monitor.getMonitor().setCurrentMovies(movies);
 
         Monitor.getMonitor().setMoviePage(false);
-        Monitor.getMonitor().setUpgradePage(true);
-        Monitor.getMonitor().setSeeDetailsMovie(false);
-        Monitor.getMonitor().setRegister(false);
-        Monitor.getMonitor().setLogin(false);
+
     }
 
     /**
@@ -56,5 +52,24 @@ public class Upgrades extends Page {
             user.setTokensCount(userTokens);
             user.getCredentials().setAccountType("premium");
         }
+    }
+
+    @Override
+    public void actionOnPage(ActionInput action) {
+        switch (action.getFeature()) {
+            case "buy tokens":
+                buyTokensAction(action);
+                break;
+            case "buy premium account":
+                buyPremiumAccount();
+                break;
+            default:
+                OutputPrinter.printError();
+        }
+    }
+
+    @Override
+    public boolean checkMoveOn() {
+        return Monitor.getMonitor().isAutentificated();
     }
 }

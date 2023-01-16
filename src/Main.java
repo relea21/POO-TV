@@ -22,13 +22,16 @@ public class Main {
         Database.getDataBase().initializeUserHashMap(inputData);
         //initialize movies
         Database.getDataBase().initializeMovies(inputData);
+        //initialize subscribeHashMap
+        Database.getDataBase().initializeSubscribeHashMap();
 
         Monitor.getMonitor().startAplication();
         ArrayNode output = objectMapper.createArrayNode();
 
         Database.getDataBase().setOutput(output);
         Database.getDataBase().setObjectMapper(objectMapper);
-        Helper.executeAction(inputData);
+
+        Helper.executeActions(inputData);
 
         ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
         objectWriter.writeValue(new File(args[1]), output);
