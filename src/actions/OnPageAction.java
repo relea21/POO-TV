@@ -15,8 +15,4 @@ public class OnPageAction implements Action{
         Monitor.getMonitor().getCurrentPage().actionOnPage(action);
     }
 
-    @Override
-    public boolean isChangePageAction() {
-        return false;
-    }
 }

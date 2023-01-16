@@ -7,12 +7,13 @@ public class PageFactory {
     }
 
     public static PageFactory getPageFactory() {
-        if(instance == null)
+        if (instance == null) {
             instance = new PageFactory();
+        }
         return instance;
     }
 
-    public Page createNewPage(String pageName) {
+    public Page createNewPage(final String pageName) {
         switch (pageName) {
             case "login":
                 return new Login();

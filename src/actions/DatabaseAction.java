@@ -25,8 +25,4 @@ public class DatabaseAction implements Action {
         }
     }
 
-    @Override
-    public boolean isChangePageAction() {
-        return false;
-    }
 }

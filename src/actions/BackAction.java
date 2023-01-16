@@ -18,8 +18,4 @@ public class BackAction implements  Action{
         Monitor.getMonitor().setCurrentPage(previousPage);
     }
 
-    @Override
-    public boolean isChangePageAction() {
-        return false;
-    }
 }

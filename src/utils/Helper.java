@@ -1,112 +1,63 @@
 package utils;
 
-import actions.BackAction;
-import actions.ChangePageAction;
-import actions.DatabaseAction;
+import actions.Action;
+import actions.ActionFactory;
 import input.Input;
 import input.ActionInput;
-import pages.*;
+import pages.Monitor;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
+
+class Invoker {
+
+    // list of all commands that have been performed;
+    private LinkedList<Action> commands;
+
+    public Invoker() {
+        commands = new LinkedList<>();
+    }
+
+    public void execute(final Action command) {
+        commands.push(command);
+        command.execute();
+    }
+}
 
 public class Helper {
 
-    /**
-     * @param action to be done
-     */
-    public static void executeActionOnPage(final ActionInput action) {
-        Monitor.getMonitor().getCurrentPage().actionOnPage(action);
+    private Invoker invoker;
+    private Input inputData;
+
+    public Helper(final Input inputData) {
+        invoker = new Invoker();
+        this.inputData = inputData;
     }
 
     /**
-     * @param action to be done
+     * execute actions from input
      */
-    public static void executeActionChangePage(final ActionInput action) {
-        ChangePageAction command = new ChangePageAction(action);
-        command.execute();
-    }
-
-
-    public static void executeActionDatabase(final ActionInput action) {
-//        switch (action.getFeature()) {
-//            case "add":
-//                Database.getDataBase().addMovie(action.getAddedMovie());
-//                break;
-//            case "delete":
-//                Database.getDataBase().deleteMovie(action.getDeletedMovie());
-//                break;
-//            default:
-//                System.out.println("Invalid command");
-//        }
-        DatabaseAction command = new DatabaseAction(action);
-        command.execute();
-    }
-
-    public static void executeActionBack(final ActionInput action) {
-        BackAction command = new BackAction();
-        command.execute();
-    }
-    /**
-     * @param inputData action to be done
-     */
-    public static void  executeActions(final Input inputData) {
+    public void  executeActions() {
         for (ActionInput actionInput : inputData.getActions()) {
-            if (actionInput.getType().equals("change page")) {
-                executeActionChangePage(actionInput);
-            }
-            if (actionInput.getType().equals("on page")) {
-                executeActionOnPage(actionInput);
-            }
-            if (actionInput.getType().equals("database")) {
-                executeActionDatabase(actionInput);
-            }
-            if (actionInput.getType().equals("back")) {
-                executeActionBack(actionInput);
-            }
+            Action command = ActionFactory.getActionFactory().getAction(actionInput);
+            invoker.execute(command);
         }
+    }
+
+    /**
+     * show recommendation if is needed, after the commands are finished
+     */
+    public void showRecommendation() {
         User currUser = Monitor.getMonitor().getCurrentUser();
-        if(Monitor.getMonitor().isAutentificated() &&
-                Monitor.getMonitor()
+        if (Monitor.getMonitor().isAutentificated()
+                && Monitor.getMonitor()
                         .getCurrentUser()
                         .getCredentials()
                         .getAccountType()
                         .equals("premium")) {
-            HashMap<String, Integer> likedGenres = new HashMap<>();
-            for(Movie movie : currUser.getLikedMovies()) {
-                for (String genre : movie.getGenres()) {
-                    if (likedGenres.containsKey(genre)) {
-                        int numLikes = likedGenres.get(genre);
-                        numLikes++;
-                        likedGenres.put(genre, numLikes);
-                    } else {
-                        Integer numLikes = 0;
-                        likedGenres.put(genre, numLikes);
-                    }
-                }
-            }
-            ArrayList<String> sortedGenres = new ArrayList<>();
-            while(likedGenres.size() > 0) {
-                Integer max = -1;
-                String maximGenre = "No gender";
-                for (Map.Entry<String, Integer> entry : likedGenres.entrySet()) {
-                    if(entry.getValue() > max) {
-                        max = entry.getValue();
-                        maximGenre = entry.getKey();
-                    } else {
-                        if (entry.getValue() == max && entry.getKey().compareTo(maximGenre) < 0) {
-                            max = entry.getValue();
-                            maximGenre = entry.getKey();
-                        }
-                    }
-                }
-                sortedGenres.add(maximGenre);
-                likedGenres.remove(maximGenre);
-            }
 
-            if(sortedGenres.size() == 0) {
+            ArrayList<String> sortedGenres = getMostLikedGenres();
+            if (sortedGenres.size() == 0) {
                 currUser.notificationRecommendationMovie("No recommendation");
                 OutputPrinter.printRecommendation();
                 return;
@@ -117,9 +68,10 @@ public class Helper {
 
             for (String genre : sortedGenres) {
                 for (Movie movie : sortedMovies) {
-                    if (movie.getGenres().contains(genre) &&
-                            Database.getDataBase()
-                                    .checkIfTheMovieExist(movie.getName(), currUser.getWatchedMovies()) == -1) {
+                    if (movie.getGenres().contains(genre)
+                            && Database.getDataBase()
+                            .checkIfTheMovieExist(movie.getName(),
+                                    currUser.getWatchedMovies()) == -1) {
                         currUser.notificationRecommendationMovie(movie.getName());
                         OutputPrinter.printRecommendation();
                         return;
@@ -130,6 +82,41 @@ public class Helper {
             currUser.notificationRecommendationMovie("No recommendation");
             OutputPrinter.printRecommendation();
         }
+    }
 
+    private ArrayList<String> getMostLikedGenres() {
+        User currUser = Monitor.getMonitor().getCurrentUser();
+        HashMap<String, Integer> likedGenres = new HashMap<>();
+        for (Movie movie : currUser.getLikedMovies()) {
+            for (String genre : movie.getGenres()) {
+                if (likedGenres.containsKey(genre)) {
+                    int numLikes = likedGenres.get(genre);
+                    numLikes++;
+                    likedGenres.put(genre, numLikes);
+                } else {
+                    Integer numLikes = 0;
+                    likedGenres.put(genre, numLikes);
+                }
+            }
+        }
+        ArrayList<String> sortedGenres = new ArrayList<>();
+        while (likedGenres.size() > 0) {
+            Integer max = -1;
+            String maximGenre = "No gender";
+            for (Map.Entry<String, Integer> entry : likedGenres.entrySet()) {
+                if (entry.getValue() > max) {
+                    max = entry.getValue();
+                    maximGenre = entry.getKey();
+                } else {
+                    if (entry.getValue() == max && entry.getKey().compareTo(maximGenre) < 0) {
+                        max = entry.getValue();
+                        maximGenre = entry.getKey();
+                    }
+                }
+            }
+            sortedGenres.add(maximGenre);
+            likedGenres.remove(maximGenre);
+        }
+        return sortedGenres;
     }
 }

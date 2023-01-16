@@ -3,7 +3,6 @@ package utils;
 import input.Input;
 import input.UserInput;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -63,25 +62,39 @@ public class Database {
         }
     }
 
+    /**
+     * SubscribeHashmap help to get what users are subscribed
+     * to some genre
+     * this method initialize the hashmap
+     */
     public void initializeSubscribeHashMap() {
         subscribeHashMap = new HashMap<>();
     }
 
+    /**
+     * @param movieName
+     * @param movies list of movies wherw you search for the movie
+     * @return position of movie in list if exists
+     * return -1 if movie doesn't exist
+     */
     //check if the movie exists in an ArrayList of movies
     //return position of movie in list if exists
     //return -1 if movie doesn't exist
-    public int checkIfTheMovieExist(String movieName, ArrayList<Movie> movies) {
-        for(int i = 0; i < movies.size(); i++) {
-            if(movies.get(i).getName().equals(movieName)) {
+    public int checkIfTheMovieExist(final String movieName, final ArrayList<Movie> movies) {
+        for (int i = 0; i < movies.size(); i++) {
+            if (movies.get(i).getName().equals(movieName)) {
                 return i;
             }
         }
         return -1;
     }
 
-    public void addMovie(MovieInput movieInput) {
+    /**
+     * @param movieInput - movie that will be added in Database
+     */
+    public void addMovie(final MovieInput movieInput) {
 
-        if(checkIfTheMovieExist(movieInput.getName(), movies) != -1){
+        if (checkIfTheMovieExist(movieInput.getName(), movies) != -1) {
             OutputPrinter.printError();
             return;
         }
@@ -94,11 +107,11 @@ public class Database {
         // this list contains all the subscribers that have been notificated about this movie
         ArrayList<Subscriber> notificatedSubcribers = new ArrayList<>();
 
-        for(String genre : newMovie.getGenres()) {
-            if(subscribeHashMap.containsKey(genre)) {
+        for (String genre : newMovie.getGenres()) {
+            if (subscribeHashMap.containsKey(genre)) {
                 ArrayList<Subscriber> subscribers = subscribeHashMap.get(genre);
-                for(Subscriber subscriber : subscribers) {
-                    if(!subscriber.isHasBeenNoticated()) {
+                for (Subscriber subscriber : subscribers) {
+                    if (!subscriber.isHasBeenNoticated()) {
                         subscriber.notificationAddMovie(newMovie.getName());
                         subscriber.setHasBeenNoticated(true);
                         notificatedSubcribers.add(subscriber);
@@ -107,29 +120,30 @@ public class Database {
             }
         }
 
-        for(Subscriber subscriber : notificatedSubcribers)
+        for (Subscriber subscriber : notificatedSubcribers) {
             subscriber.setHasBeenNoticated(false);
+        }
     }
 
-    public void deleteMovie(String deletedMovie) {
+    public void deleteMovie(final String deletedMovie) {
         ArrayList<User> users = new ArrayList<>(usersHashMap.values());
         int indexInDatabase = checkIfTheMovieExist(deletedMovie, movies);
-        if(indexInDatabase == -1) {
+        if (indexInDatabase == -1) {
             OutputPrinter.printError();
             return;
         }
 
         movies.remove(indexInDatabase);
 
-        for(User user : users) {
+        for (User user : users) {
             // index is used to check position of deleted movie
             // in purchased movies , watched movies, liked movies, rated movies
             int index = checkIfTheMovieExist(deletedMovie,
                                             user.getPurchasedMovies());
-            if(index != -1) {
+            if (index != -1) {
                 user.getPurchasedMovies().remove(index);
                 user.notificationDeleteMovie(deletedMovie);
-                if(user.getCredentials().getAccountType().equals("premium")) {
+                if (user.getCredentials().getAccountType().equals("premium")) {
                     int numFreeMovie = user.getNumFreePremiumMovies();
                     user.setNumFreePremiumMovies(numFreeMovie + 1);
                 } else {
@@ -140,19 +154,19 @@ public class Database {
 
             index = checkIfTheMovieExist(deletedMovie,
                                     user.getWatchedMovies());
-            if(index != -1) {
+            if (index != -1) {
                 user.getWatchedMovies().remove(index);
             }
 
             index = checkIfTheMovieExist(deletedMovie,
                                     user.getLikedMovies());
-            if(index != -1) {
+            if (index != -1) {
                 user.getLikedMovies().remove(index);
             }
 
             index = checkIfTheMovieExist(deletedMovie,
                                     user.getRatedMovies());
-            if(index != -1) {
+            if (index != -1) {
                 user.getRatedMovies().remove(index);
             }
         }
@@ -194,7 +208,7 @@ public class Database {
         return subscribeHashMap;
     }
 
-    public void setSubscribeHashMap(HashMap<String, ArrayList<Subscriber>> subscribeHashMap) {
+    public void setSubscribeHashMap(final HashMap<String, ArrayList<Subscriber>> subscribeHashMap) {
         this.subscribeHashMap = subscribeHashMap;
     }
 
@@ -202,7 +216,7 @@ public class Database {
         return pagesHistory;
     }
 
-    public void setPagesHistory(LinkedList<Page> pagesHistory) {
+    public void setPagesHistory(final LinkedList<Page> pagesHistory) {
         this.pagesHistory = pagesHistory;
     }
 }

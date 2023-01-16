@@ -31,7 +31,9 @@ public class Main {
         Database.getDataBase().setOutput(output);
         Database.getDataBase().setObjectMapper(objectMapper);
 
-        Helper.executeActions(inputData);
+        Helper client = new Helper(inputData);
+        client.executeActions();
+        client.showRecommendation();
 
         ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
         objectWriter.writeValue(new File(args[1]), output);
